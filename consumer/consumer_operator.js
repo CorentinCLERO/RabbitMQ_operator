@@ -86,13 +86,22 @@ async function consume(msg) {
 
       console.log(`Result of ${n1} ${keyOperator} ${n2} = ${result}`);
 
-      const response = {
-        operator: keyOperator,
-        n1,
-        n2,
-        result,
-      };
-      channel.sendToQueue(queueResults, Buffer.from(JSON.stringify(response)));
+      setTimeout(
+        () => {
+          const response = {
+            operator: keyOperator,
+            n1,
+            n2,
+            result,
+          };
+          channel.sendToQueue(
+            queueResults,
+            Buffer.from(JSON.stringify(response))
+          );
+          console.log("sent to queueResults:", response);
+        },
+        Math.floor(Math.random() * 10000) + 5000
+      );
     }
   } catch (error) {
     console.error("Error in consume function:", error);

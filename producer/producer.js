@@ -32,8 +32,10 @@ async function send() {
       const op = getRandomOperation();
       const message = generateMessage(op);
       channel.publish(exchangeDirect, op, Buffer.from(message));
-      `[✓] Message envoyé avec clé '${op}' sur l'échange '${exchangeDirect}'`,
-        setTimeout(publishRandomMessage, getRandomInterval());
+      console.log(
+        `[✓] Message envoyé avec clé '${op}' sur l'échange '${exchangeDirect}'`
+      );
+      setTimeout(publishRandomMessage, getRandomInterval());
     };
 
     publishRandomMessage();
