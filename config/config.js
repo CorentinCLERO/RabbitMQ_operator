@@ -29,20 +29,18 @@ async function config() {
     await channel.assertQueue(queueDiv, { durable: false });
     await channel.assertQueue(queueResults, { durable: false });
 
-    // Binding des exchanges
+    // Binding des exchanges direct -> exchange fanout pour les messages "all"
     await channel.bindExchange(exchangeFanout, exchangeDirect, "all");
 
-    // Binding des queues avec l'exchange direct
+    await channel.bindQueue(queueAdd, exchangeFanout, "");
+    await channel.bindQueue(queueSub, exchangeFanout, "");
+    await channel.bindQueue(queueMul, exchangeFanout, "");
+    await channel.bindQueue(queueDiv, exchangeFanout, "");
+
     await channel.bindQueue(queueAdd, exchangeDirect, "add");
     await channel.bindQueue(queueSub, exchangeDirect, "sub");
     await channel.bindQueue(queueMul, exchangeDirect, "mul");
     await channel.bindQueue(queueDiv, exchangeDirect, "div");
-
-    // Binding des queues de résultats
-    await channel.bindQueue(queueResults, queueAdd, "");
-    await channel.bindQueue(queueResults, queueDiv, "");
-    await channel.bindQueue(queueResults, queueSub, "");
-    await channel.bindQueue(queueResults, queueMul, "");
 
     console.log("RabbitMQ configuration finie avec succès");
 
