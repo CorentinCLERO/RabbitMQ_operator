@@ -1,5 +1,10 @@
 const amqplib = require("amqplib");
 require("dotenv").config();
+const queueAdd = require("../constants/constants").queueAdd;
+const queueSub = require("../constants/constants").queueSub;
+const queueMul = require("../constants/constants").queueMul;
+const queueDiv = require("../constants/constants").queueDiv;
+const queueResults = require("../constants/constants").queueResults;
 
 const rabbitmq_url = process.env.RABBITMQ_URL;
 
@@ -13,7 +18,20 @@ if (!ArrayOfOperators.includes(keyOperator)) {
   process.exit(1);
 }
 
-const queueOperator = "operator_queue_" + keyOperator;
+const queueOperator = (() => {
+  switch (keyOperator) {
+    case "add":
+      return queueAdd;
+    case "sub":
+      return queueSub;
+    case "mul":
+      return queueMul;
+    case "div":
+      return queueDiv;
+    default:
+      throw new Error("Invalid operator");
+  }
+})();
 
 async function receive() {
   try {
@@ -27,7 +45,7 @@ async function receive() {
     await channel.assertQueue(queueOperator, { durable: false });
 
     // vérifier que la queue results existe (la créer sinon)
-    await channel.assertQueue("results", { durable: false });
+    await channel.assertQueue(queueResults, { durable: false });
 
     channel.consume(queueOperator, consume, { noAck: true });
   } catch (error) {
@@ -74,7 +92,7 @@ async function consume(msg) {
         n2,
         result,
       };
-      channel.sendToQueue("results", Buffer.from(JSON.stringify(response)));
+      channel.sendToQueue(queueResults, Buffer.from(JSON.stringify(response)));
     }
   } catch (error) {
     console.error("Error in consume function:", error);
