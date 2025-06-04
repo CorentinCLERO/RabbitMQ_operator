@@ -13,6 +13,79 @@ services:
     volumes:
       - rabbit-data:/var/lib/rabbitmq
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabbitmq-network
+
+  config:
+    build: .
+    command: node config/config.js
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-results:
+    build: .
+    command: node consumer/consumer_results.js
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-add:
+    build: .
+    command: node consumer/consumer_operator.js add
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-sub:
+    build: .
+    command: node consumer/consumer_operator.js sub
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-mul:
+    build: .
+    command: node consumer/consumer_operator.js mul
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-div:
+    build: .
+    command: node consumer/consumer_operator.js div
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  producer:
+    build: .
+    command: node producer/producer.js
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
 
 volumes:
   rabbit-data:
+
+networks:
+  rabbitmq-network:
