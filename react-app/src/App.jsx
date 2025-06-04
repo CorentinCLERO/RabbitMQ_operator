@@ -211,8 +211,8 @@ function App() {
                       {item.op === "all" && "Toutes"}
                     </td>
                     <td>{item.n2}</td>
-                    <td className={!item.result ? "loading-result" : ""}>
-                      {item.result || "Chargement..."}
+                    <td className={item.result === "" ? "loading-result" : ""}>
+                      {item.result === "" ? "Chargement..." : item.result}
                     </td>
                     <td>
                       <button
