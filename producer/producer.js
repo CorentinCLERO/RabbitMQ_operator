@@ -17,11 +17,11 @@ function getRandomOperation() {
   return operations[Math.floor(Math.random() * operations.length)];
 }
 
-// function getRandomInterval() {
-//   return Math.floor(Math.random() * 4000) + 1000;
-// }
+function getRandomInterval() {
+  return Math.floor(Math.random() * 4000) + 1000;
+}
 
-async function send(data) {
+async function send(data = undefined) {
   try {
     const conn = await amqplib.connect(rabbitmqUrl);
     const channel = await conn.createChannel();
@@ -37,8 +37,15 @@ async function send(data) {
         console.log(
           `[✓] Message envoyé avec clé '${op}' sur l'échange '${exchangeDirect} avec le message ${message}'`
         );
+      } else {
+        const op = getRandomOperation();
+        const message = generateMessage(op);
+        channel.publish(exchangeDirect, op, Buffer.from(message));
+        console.log(
+          `[✓] Message envoyé avec clé '${op}' sur l'échange '${exchangeDirect}'`
+        );
+        setTimeout(publishRandomMessage, getRandomInterval());
       }
-      // setTimeout(publishRandomMessage, getRandomInterval());
     };
 
     publishRandomMessage();
@@ -48,6 +55,7 @@ async function send(data) {
   }
 }
 
-send((data = undefined));
-
+if (require.main === module) {
+  send();
+}
 module.exports = { send };

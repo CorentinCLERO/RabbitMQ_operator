@@ -1,0 +1,111 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbit
+    hostname: rabbit-serv
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabbitmq-network
+  config:
+    build: .
+    command: node config/config.js
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  react:
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  websocket:
+    build: .
+    command: node websocket/index.js
+    ports:
+      - "3000:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - rabbitmq-network
+
+  consumer-results:
+    build: .
+    command: node consumer/consumer_results.js
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      websocket:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-add:
+    build: .
+    command: node consumer/consumer_operator.js add
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-sub:
+    build: .
+    command: node consumer/consumer_operator.js sub
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-mul:
+    build: .
+    command: node consumer/consumer_operator.js mul
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+  consumer-div:
+    build: .
+    command: node consumer/consumer_operator.js div
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq-network
+
+volumes:
+  rabbit-data:
+
+networks:
+  rabbitmq-network:
