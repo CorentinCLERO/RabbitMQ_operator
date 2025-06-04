@@ -1,6 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import "./App.css";
+
+const socket = io("http://localhost:3000");
 
 function App() {
   const [firstNumber, setFirstNumber] = useState("");
@@ -12,20 +14,33 @@ function App() {
   const firstInputRef = useRef(null);
   const secondInputRef = useRef(null);
 
-  const socket = io("http://localhost:3000");
+  useEffect(() => {
+    socket.on("resultValue", (data) => {
+      console.log("Calculation result received:", data);
 
-  // function socketTrigger() {
-  //   socket.emit("rabbitMQ", { data: "Test message from RabbitMQ" });
-  // }
+      setResults((prevResults) => {
+        return prevResults.map((item) => {
+          if (
+            +item.n1 === +data.n1 &&
+            +item.n2 === +data.n2 &&
+            item.op === data.operator
+          ) {
+            return { ...item, result: data.result };
+          }
+          return item;
+        });
+      });
+    });
 
-  socket.on("resultValue", () => {
-    console.log("Calculation result received: with no data");
-  });
-  socket.on("resultValue", (data) => {
-    console.log("Calculation result received:", data);
-  });
+    return () => {
+      socket.off("resultValue");
+    };
+  }, []);
 
-  // Fonction pour gérer les entrées numériques
+  useEffect(() => {
+    console.log("Results updated:", results);
+  }, [results]);
+
   const handleNumberInput = (value) => {
     if (activeInput === "first") {
       setFirstNumber(firstNumber + value);
@@ -34,7 +49,6 @@ function App() {
     }
   };
 
-  // Fonction pour effacer le dernier chiffre
   const handleBackspace = () => {
     if (activeInput === "first") {
       setFirstNumber(firstNumber.slice(0, -1));
@@ -43,7 +57,6 @@ function App() {
     }
   };
 
-  // Fonction pour effacer tout le champ
   const handleClear = () => {
     if (activeInput === "first") {
       setFirstNumber("");
@@ -52,7 +65,6 @@ function App() {
     }
   };
 
-  // Fonction pour valider que seuls les chiffres sont entrés
   const validateNumberInput = (e) => {
     const value = e.target.value;
     // Accepte uniquement les chiffres
@@ -65,7 +77,6 @@ function App() {
     }
   };
 
-  // Fonction pour calculer les résultats
   const calculateResults = () => {
     setResults([
       ...results,
@@ -78,28 +89,12 @@ function App() {
     ]);
     socket.emit("calculateResults", {
       data: {
-        n1: firstNumber,
-        n2: secondNumber,
+        n1: +firstNumber,
+        n2: +secondNumber,
         op: operation,
       },
     });
   };
-
-  // Fonction pour formater l'affichage des résultats
-  // const formatOperation = (op) => {
-  //   switch (op) {
-  //     case "add":
-  //       return "Addition";
-  //     case "sub":
-  //       return "Soustraction";
-  //     case "mul":
-  //       return "Multiplication";
-  //     case "div":
-  //       return "Division";
-  //     default:
-  //       return "";
-  //   }
-  // };
 
   return (
     <div className="container">
@@ -176,7 +171,7 @@ function App() {
       </div>
       <div className="result-container">
         {results.length === 0 ? (
-          <div>Loading...</div>
+          <div>Tu peux faire des calculs</div>
         ) : (
           <table>
             <thead>
@@ -192,7 +187,7 @@ function App() {
               {results.map((item, index) => (
                 <tr key={index}>
                   <td>{item.n1}</td>
-                  <td>{item.operation}</td>
+                  <td>{item.op}</td>
                   <td>{item.n2}</td>
                   <td>{item.result || "loading..."}</td>
                   <td>

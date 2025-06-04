@@ -1,10 +1,12 @@
 require("dotenv").config();
+const { io } = require("socket.io-client");
 
 const amqp = require("amqplib");
 const { queueResults } = require("../constants/constants");
-const { getIO } = require("../websocket/server");
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL;
+
+const socket = io("http://localhost:3000");
 
 async function resultConsumer() {
   const connection = await amqp.connect(RABBITMQ_URL);
@@ -33,8 +35,7 @@ function handleResultMessage(channel, msg) {
     console.log("Résultat reçu :");
     console.log(JSON.stringify(result, null, 2));
 
-    const io = getIO();
-    io.emit("resultValue", result);
+    socket.emit("resultValue", result);
 
     console.log("Événement 'calculationResult' émis :", result);
 

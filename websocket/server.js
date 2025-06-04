@@ -1,21 +1,11 @@
-const http = require("http");
 const { Server } = require("socket.io");
 
-let io;
+const io = new Server({ cors: "*" });
 
 function startServer(port = 3000) {
-  const httpServer = http.createServer();
-  io = new Server(httpServer, {
-    cors: { origin: "*", methods: ["GET", "POST"] },
-  });
-  httpServer.listen(port, () => {
-    console.log(`Socket.IO server listening on port ${port}`);
-  });
-}
-
-function getIO() {
-  if (!io) throw new Error("Socket.IO not initialized!");
+  io.listen(port);
+  console.log(`Socket.IO server listening on port ${port}`);
   return io;
 }
 
-module.exports = { startServer, getIO };
+module.exports = { io, startServer };

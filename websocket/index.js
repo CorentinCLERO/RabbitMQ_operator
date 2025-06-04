@@ -1,16 +1,13 @@
 // Importer le module websocket
 const { send } = require("../producer/producer");
-const { startServer, getIO } = require("./server");
+const { startServer, io } = require("./server");
 
 // Démarrer le serveur sur le port 3000
 startServer(3000);
 
-const io = getIO();
-
 io.on("connection", (socket) => {
   console.log(`socket ${socket.id} connected`);
 
-  ioSocket = socket;
   socket.emit("hello", "world");
 
   // Écouter l'événement rabbitMQ sur l'objet socket
@@ -26,6 +23,8 @@ io.on("connection", (socket) => {
 
   socket.on("resultValue", (data) => {
     console.log("Calculation result received:", data);
+    // Forward the result to all connected clients
+    io.emit("resultValue", data);
   });
 
   socket.on("disconnect", (reason) => {
