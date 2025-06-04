@@ -1,4 +1,4 @@
-# RabbitMQ Operator
+# RabbitMQ Operator KUCA Brice, CLERO Corentin, TARRAF Fatat, SEILLON Quentin
 
 Un système de calcul distribué utilisant RabbitMQ pour traiter des opérations mathématiques avec une interface web React.
 
@@ -19,6 +19,8 @@ Ce projet démontre l'utilisation de RabbitMQ dans une architecture de microserv
 4. **Consumers** traitent les opérations et envoient les résultats à la queue "results"
 5. **Consumer Results** collecte les résultats et les transmet via WebSocket
 6. **Interface React** affiche les résultats en temps réel
+
+![](image.png)
 
 ## Architecture
 
