@@ -74,15 +74,25 @@ function App() {
   };
 
   const calculateResults = () => {
-    setResults([
-      ...results,
-      {
-        n1: firstNumber,
-        n2: secondNumber,
-        op: operation,
-        result: "",
-      },
-    ]);
+    if (operation === "all") {
+      setResults([
+        ...results,
+        { n1: firstNumber, n2: secondNumber, op: "add", result: "" },
+        { n1: firstNumber, n2: secondNumber, op: "sub", result: "" },
+        { n1: firstNumber, n2: secondNumber, op: "mul", result: "" },
+        { n1: firstNumber, n2: secondNumber, op: "div", result: "" },
+      ]);
+    } else {
+      setResults([
+        ...results,
+        {
+          n1: firstNumber,
+          n2: secondNumber,
+          op: operation,
+          result: "",
+        },
+      ]);
+    }
     socket.emit("calculateResults", {
       data: {
         n1: +firstNumber,

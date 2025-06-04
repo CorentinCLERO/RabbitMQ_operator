@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const envPath = path.join(__dirname, "..", ".env");
-const envExamplePath = path.join(__dirname, "..", ".env.example");
+const envPath = path.join(__dirname, ".env");
+const envExamplePath = path.join(__dirname, ".env.example");
 
 // Vérifie si le fichier .env existe déjà
 if (!fs.existsSync(envPath)) {
