@@ -143,9 +143,25 @@ docker-compose up --build
 # Lancer seulement RabbitMQ
 docker-compose up rabbitmq
 
-# Lancer les services Node.js localement
-npm run dev
+node config/config.js
+
+node consumer/consumer_operator.js add
+
+node consumer/consumer_operator.js div
+
+node consumer/consumer_operator.js mul
+
+node consumer/consumer_operator.js sub
+
+node consumer/consumer_operator.js all
+
+node consumer/consumer_results.js
+
+node producter/producer.js
+
 ```
+
+penser à modifier l'url dans le .env pour mettre : `RABBITMQ_URL=amqp://user:password@localhost:5672`
 
 ### Structure du projet
 
