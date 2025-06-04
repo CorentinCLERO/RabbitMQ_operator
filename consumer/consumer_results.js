@@ -6,7 +6,7 @@ const { queueResults } = require("../constants/constants");
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL;
 
-const socket = io("http://localhost:3000");
+const socket = io(process.env.SOCKET_URL);
 
 async function resultConsumer() {
   const connection = await amqp.connect(RABBITMQ_URL);
