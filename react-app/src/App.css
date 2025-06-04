@@ -21,6 +21,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
+  min-width: 500px;
 }
 
 .calculator-container {
@@ -126,7 +127,10 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
-  color: black
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .numpad button:hover {
@@ -168,6 +172,87 @@
   color: #1976d2;
 }
 
+/* Styles pour le tableau de résultats */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+  background-color: #4caf50;
+  color: white;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.empty-table-message {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  font-style: italic;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.loading-result {
+  color: #999;
+  font-style: italic;
+}
+
+.results-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.clear-all-btn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.clear-all-btn:hover {
+  background-color: #f57c00;
+}
+
 @media (max-width: 600px) {
   .calculator-container {
     padding: 15px;
@@ -177,5 +262,14 @@
     width: 50px;
     height: 50px;
     font-size: 18px;
+  }
+  
+  .container {
+    flex-direction: column;
+  }
+  
+  .result-container {
+    min-width: auto;
+    width: 100%;
   }
 }

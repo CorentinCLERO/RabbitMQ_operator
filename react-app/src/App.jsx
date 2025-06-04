@@ -37,10 +37,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("Results updated:", results);
-  }, [results]);
-
   const handleNumberInput = (value) => {
     if (activeInput === "first") {
       setFirstNumber(firstNumber + value);
@@ -170,39 +166,59 @@ function App() {
         </div>
       </div>
       <div className="result-container">
+        <h2>Résultats des calculs</h2>
         {results.length === 0 ? (
-          <div>Tu peux faire des calculs</div>
+          <div className="empty-table-message">
+            <p>Aucun calcul effectué pour le moment.</p>
+            <p>Utilisez la calculatrice pour voir les résultats ici.</p>
+          </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>number 1</th>
-                <th>operation</th>
-                <th>number 2</th>
-                <th>Result</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.n1}</td>
-                  <td>{item.op}</td>
-                  <td>{item.n2}</td>
-                  <td>{item.result || "loading..."}</td>
-                  <td>
-                    <button
-                      onClick={() =>
-                        setResults(results.filter((_, i) => i !== index))
-                      }
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <>
+            <div className="results-actions">
+              <button className="clear-all-btn" onClick={() => setResults([])}>
+                Effacer tous les résultats
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Premier nombre</th>
+                  <th>Opération</th>
+                  <th>Deuxième nombre</th>
+                  <th>Résultat</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {results.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.n1}</td>
+                    <td>
+                      {item.op === "add" && "+"}
+                      {item.op === "sub" && "-"}
+                      {item.op === "mul" && "×"}
+                      {item.op === "div" && "÷"}
+                      {item.op === "all" && "Toutes"}
+                    </td>
+                    <td>{item.n2}</td>
+                    <td className={!item.result ? "loading-result" : ""}>
+                      {item.result || "Chargement..."}
+                    </td>
+                    <td>
+                      <button
+                        className="delete-btn"
+                        onClick={() =>
+                          setResults(results.filter((_, i) => i !== index))
+                        }
+                      >
+                        Supprimer
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
     </div>
